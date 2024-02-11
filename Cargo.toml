@@ -1,0 +1,7 @@
+[package]
+name = "deps-gen"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+cargo-lock = "9.0.0"
