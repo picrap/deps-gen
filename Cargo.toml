@@ -4,4 +4,5 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-cargo-lock = "9.0.0"
+cargo-lock = { version = "9.0.0" }
+handlebars = { version = "5.1.0" }

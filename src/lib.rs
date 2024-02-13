@@ -1,19 +1,21 @@
 mod test;
 
 mod deps {
+    use std::collections::BTreeMap;
     use std::env::current_dir;
     use std::fs;
     use std::io::Error;
     use std::path::PathBuf;
     use cargo_lock::Lockfile;
+    use handlebars::Handlebars;
 
     pub struct Configuration {
-        template_file_path: Option<PathBuf>,
-        template: Option<String>,
+        pub template_file_path: Option<PathBuf>,
+        pub template: Option<String>,
 
-        cargo_lock_path: PathBuf,
+        pub cargo_lock_path: PathBuf,
 
-        target_path: Option<PathBuf>,
+        pub target_path: Option<PathBuf>,
     }
 
     impl Configuration {
@@ -44,7 +46,7 @@ mod deps {
             if let Some(template) = &self.template {
                 template.clone()
             } else {
-                let path = self.template_file_path.expect("Either a template or template file must be specified");
+                let path = &self.template_file_path.as_ref().expect("Either a template or template file must be specified");
                 let template = fs::read_to_string(path).expect("Problem reading template file");
                 template
             }
@@ -59,21 +61,26 @@ mod deps {
         if !should_generate(&configuration) {
             return Ok(());
         }
-        let output = generate_output(&configuration)?;
+        let output = generate_output(&configuration);
         Ok(())
     }
 
     #[cfg(test)]
-    fn debug_generate_output(configuration: &Configuration) -> Result< String, Error> {
+    pub fn debug_generate_output(configuration: &Configuration) -> String {
         generate_output(configuration)
     }
 
-    fn generate_output(configuration: &Configuration) -> Result< String, Error> {
+    fn generate_output(configuration: &Configuration) -> String {
         let _cd = current_dir().unwrap();
         let lock_file = Lockfile::load(&configuration.cargo_lock_path).expect("Can’t load lock file");
         let packages = &lock_file.packages;
         let template = configuration.template();
-        todo!()
+        let handlebars = Handlebars::new();
+        let mut data = BTreeMap::new();
+        data.insert("dependencies", packages);
+        let output = handlebars.render_template(template.as_str(), &data);
+        let output = output.expect("Template error");
+        output
     }
 
     fn should_generate(configuration: &Configuration) -> bool {
