@@ -1,8 +1,10 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::deps;
-    use crate::deps::{Configuration, TemplateSource};
+    use crate::configuration::{TemplateSource};
+    use crate::generator::Generator;
+
+    pub type Configuration = crate::configuration::Configuration;
 
     #[test]
     fn gen_test() {
@@ -11,7 +13,7 @@ mod tests {
 {{#each dependencies}}name={{name}}
 {{/each}}
 there".into());
-        let output = deps::debug_generate_output(&configuration);
+        let output = Generator::generate_output(&configuration);
         assert!(output.contains("name=cargo-lock"));
     }
 }
