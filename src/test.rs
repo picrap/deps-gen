@@ -6,7 +6,7 @@ mod tests {
 
     #[test]
     fn gen_test() {
-        let mut configuration = Configuration::new();
+        let mut configuration = Configuration::default();
         configuration.template = TemplateSource::Text("here
 {{#each dependencies}}name={{name}}
 {{/each}}

@@ -2,7 +2,7 @@ mod test;
 
 #[allow(dead_code)]
 
-mod deps {
+pub mod deps {
     use std::env::current_dir;
     use std::fs;
     use std::io::Error;
@@ -26,8 +26,8 @@ mod deps {
         pub maximum_depth: Option<usize>,
     }
 
-    impl Configuration {
-        pub fn new() -> Self {
+    impl Default for Configuration {
+        fn default() -> Self {
             Self {
                 template: TemplateSource::File("deps.template.rs".into()),
                 cargo_lock_path: "Cargo.lock".into(),
@@ -38,7 +38,9 @@ mod deps {
                 maximum_depth: None,
             }
         }
+    }
 
+    impl Configuration {
         pub fn target_path(&self) -> PathBuf {
             if let Some(target_path) = &self.target_path {
                 target_path.clone()
@@ -80,7 +82,7 @@ mod deps {
     }
 
     pub fn gen() -> Result<(), Error> {
-        gen_with_configuration(Configuration::new())
+        gen_with_configuration(Configuration::default())
     }
 
     pub fn gen_with_configuration(configuration: Configuration) -> Result<(), Error> {
