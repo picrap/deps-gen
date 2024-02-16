@@ -19,7 +19,7 @@ pub struct Configuration {
 impl Default for Configuration {
     fn default() -> Self {
         Self {
-            template: TemplateSource::File("deps.template.rs".into()),
+            template: TemplateSource::File("src/deps.template.rs".into()),
             cargo_lock_path: "Cargo.lock".into(),
             target_path: None,
             post_template_search: Some("//{}".into()),
