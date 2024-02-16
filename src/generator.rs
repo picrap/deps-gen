@@ -2,7 +2,7 @@ use std::env::current_dir;
 use std::fs;
 use std::io::Error;
 use handlebars::Handlebars;
-use crate::configuration::Configuration;
+use crate::configuration::{Configuration, TemplateSource};
 use crate::data::Data;
 
 pub(crate) struct Generator;
@@ -32,8 +32,18 @@ impl Generator {
 
     fn should_generate(configuration: &Configuration) -> bool {
         if let Ok(target_time) = fs::metadata(configuration.target_path()) {
-            let source_time = fs::metadata(&configuration.cargo_lock_path).expect("Can’t open lock file");
-            source_time.modified().unwrap() > target_time.modified().unwrap()
+            let lock_file_time = fs::metadata(&configuration.cargo_lock_path).expect("Can’t open lock file");
+            if lock_file_time.modified().unwrap() > target_time.modified().unwrap() {
+                true
+            } else if let TemplateSource::File(source_file) = &configuration.template {
+                if let Ok(source_time) = fs::metadata(source_file) {
+                    source_time.modified().unwrap() > target_time.modified().unwrap()
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
         } else {
             true
         }
