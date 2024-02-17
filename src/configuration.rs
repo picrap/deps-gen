@@ -12,8 +12,8 @@ pub struct Configuration {
     pub target_path: Option<PathBuf>,
     pub post_template_search: Option<String>,
     pub post_template_replace: String,
-    pub include_root: bool,
-    pub maximum_depth: Option<usize>,
+    //pub include_root: bool,
+    //pub maximum_depth: Option<usize>,
 }
 
 impl Default for Configuration {
@@ -24,8 +24,8 @@ impl Default for Configuration {
             target_path: None,
             post_template_search: Some("//{}".into()),
             post_template_replace: "".into(),
-            include_root: false,
-            maximum_depth: None,
+            //include_root: false,
+            //maximum_depth: None,
         }
     }
 }

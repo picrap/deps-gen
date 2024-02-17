@@ -7,3 +7,4 @@ edition = "2021"
 cargo-lock = { version = "9.0.0" }
 handlebars = { version = "5.1.0" }
 serde = { version = "1.0.196", features = ["derive"] }
+crates_io_api = "0.9.0"
