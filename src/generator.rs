@@ -21,17 +21,17 @@ impl Generator {
     }
 
    pub(crate) fn generate_output(configuration: &Configuration) -> String {
-        let _cd = current_dir().unwrap();
-        let template = configuration.template_text();
-        let handlebars = Handlebars::new();
-        let data = Data::load(configuration);
-        let output = handlebars.render_template(template.as_str(), &data);
-        let mut output = output.expect("Template error");
-        if let Some(post_template_search) = &configuration.post_template_search {
-            output = output.replace(post_template_search, &configuration.post_template_replace)
-        }
-        output
-    }
+       let _cd = current_dir().unwrap();
+       let template = configuration.template_text();
+       let handlebars = Handlebars::new();
+       let data = Data::load(configuration);
+       let output = handlebars.render_template(template.as_str(), &data);
+       let mut output = output.expect("Template error");
+       if let Some(post_template_search) = &configuration.post_template_search {
+           output = output.replace(post_template_search, &configuration.post_template_replace)
+       }
+       output
+   }
 
     fn should_generate(configuration: &Configuration) -> bool {
         if let Ok(target_time) = fs::metadata(configuration.target_path()) {

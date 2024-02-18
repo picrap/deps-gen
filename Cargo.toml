@@ -4,7 +4,6 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
-cargo-lock = { version = "9.0.0" }
 handlebars = { version = "5.1.0" }
 serde = { version = "1.0.196", features = ["derive"] }
-crates_io_api = "0.9.0"
+cargo_metadata = { version = "0.18.1" }

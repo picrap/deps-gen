@@ -1,8 +1,7 @@
 use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::RwLock;
-use cargo_lock::{Lockfile, Package};
-use crates_io_api::{CrateResponse, SyncClient};
+use cargo_metadata::{MetadataCommand, Package};
 use serde::Serialize;
 use crate::configuration::Configuration;
 
@@ -19,11 +18,10 @@ struct PackageNode<'α> {
 
 impl Data {
     pub fn load(configuration: &Configuration) -> Self {
-        let lock_file = Lockfile::load(&configuration.cargo_lock_path).expect("Can’t load lock file");
-        let names: Vec<&str> = lock_file.packages.iter().map(|p| p.name.as_str()).collect();
-        let tree = Self::create_tree(lock_file.packages.iter().collect());
-        let crates = Self::load_crates(names);
-        let packages = lock_file.packages;
+        let metadata = MetadataCommand::new().exec().expect("Dood?");
+        let tree = Self::create_tree(metadata.packages.iter().collect());
+        let packages = Self::flatten(tree, configuration);
+        let packages = packages.iter().map(|p|*p.read().unwrap().package).collect();
         Self {
             dependencies: packages,
         }
@@ -33,13 +31,14 @@ impl Data {
         let mut tree = BTreeMap::<&str, Rc<RwLock<PackageNode>>>::new();
         for package in &packages {
             tree.insert(package.name.as_str(), Rc::new(RwLock::new(PackageNode {
-                package: package,
+                package,
                 dependencies: RwLock::new(vec![]),
                 referenced: 0,
             })));
         }
-        for (_, value) in tree.iter() {
-            let mut dependencies: Vec<Rc<RwLock<PackageNode>>> = value.read().unwrap().package.dependencies.iter().map(|d| tree.get(d.name.as_str()).unwrap().clone()).collect();
+        for value in tree.values() {
+            let mut dependencies: Vec<Rc<RwLock<PackageNode>>> = value.read().unwrap().package.dependencies.iter()
+                .filter_map(|d| tree.get(d.name.as_str())).cloned().collect();
             for dependency in dependencies.iter() {
                 dependency.write().unwrap().referenced += 1;
             }
@@ -49,8 +48,23 @@ impl Data {
         root.clone()
     }
 
-    fn load_crates(names: Vec<&str>) -> Vec<CrateResponse> {
-        let client = SyncClient::new("deps-gen", std::time::Duration::from_millis(1000), ).unwrap();
-        names.iter().map(|n| client.get_crate(n).expect("Can’t load crate info")).collect()
+    fn flatten<'α>(tree: Rc<RwLock<PackageNode<'α>>>, configuration: &Configuration) -> Vec<Rc<RwLock<PackageNode<'α>>>> {
+        let mut packages: BTreeMap<&'α str, Rc<RwLock<PackageNode<'α>>>> = BTreeMap::new();
+        Self::flatten_to_vec(tree, configuration, 0, &mut packages);
+        packages.values().cloned().collect()
+    }
+
+    fn flatten_to_vec<'α>(tree: Rc<RwLock<PackageNode<'α>>>, configuration: &Configuration, current_depth: usize, packages: &mut BTreeMap<&'α str, Rc<RwLock<PackageNode<'α>>>>) {
+        if let Some(maximum_depth) = configuration.maximum_depth {
+            if current_depth >= maximum_depth {
+                return;
+            }
+        }
+        if current_depth > 0 || configuration.include_root {
+            packages.insert(tree.read().unwrap().package.name.as_str(), tree.clone());
+            for dependency in tree.read().unwrap().dependencies.read().unwrap().iter() {
+                Self::flatten_to_vec(dependency.clone(), configuration, current_depth + 1, packages);
+            }
+        }
     }
 }
