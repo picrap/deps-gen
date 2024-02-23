@@ -10,7 +10,7 @@ The goal is to generate a file from a template with dependencies from `Cargo.loc
 In `Cargo.toml`, add the following line:
 ```toml
 [build-dependencies]
-deps-gen
+deps-gen = "*"
 ```
 then in your `build.rs`:
 ```rust
