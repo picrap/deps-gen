@@ -1,9 +1,11 @@
 [package]
 name = "deps-gen"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
+license = "MIT"
+description = "Generate a file from template and Cargo.lock"
 
 [dependencies]
 handlebars = { version = "5.1.0" }
-serde = { version = "1.0.196", features = ["derive"] }
+serde = { version = "1.0.197", features = ["derive"] }
 cargo_metadata = { version = "0.18.1" }
