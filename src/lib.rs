@@ -3,7 +3,7 @@
 mod test;
 mod generator;
 mod data;
-mod configuration;
+pub mod configuration;
 
 #[allow(dead_code)]
 
