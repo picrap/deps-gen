@@ -10,9 +10,9 @@ pub struct Data {
     dependencies: Vec<Package>,
 }
 
-struct PackageNode<'α> {
-    pub package: &'α Package,
-    pub dependencies: RwLock<Vec<Rc<RwLock<PackageNode<'α>>>>>,
+struct PackageNode {
+    pub package: Rc<RwLock<Package>>,
+    pub dependencies: RwLock<Vec<Rc<RwLock<PackageNode>>>>,
     referenced: usize,
 }
 
@@ -21,7 +21,7 @@ impl Data {
         let metadata = MetadataCommand::new().exec().expect("Dood?");
         let tree = Self::create_tree(metadata.packages.iter().collect());
         let packages = Self::flatten(tree, configuration);
-        let packages = packages.iter().map(|p|*p.read().unwrap().package).collect();
+        let packages = packages.iter().map(|p| p.read().unwrap().package.read().unwrap().clone()).collect();
         Self {
             dependencies: packages,
         }
@@ -29,15 +29,15 @@ impl Data {
 
     fn create_tree(packages: Vec<&Package>) -> Rc<RwLock<PackageNode>> {
         let mut tree = BTreeMap::<&str, Rc<RwLock<PackageNode>>>::new();
-        for package in &packages {
+        for package in packages {
             tree.insert(package.name.as_str(), Rc::new(RwLock::new(PackageNode {
-                package,
+                package: Rc::new(RwLock::new(package.clone())),
                 dependencies: RwLock::new(vec![]),
                 referenced: 0,
             })));
         }
         for value in tree.values() {
-            let mut dependencies: Vec<Rc<RwLock<PackageNode>>> = value.read().unwrap().package.dependencies.iter()
+            let mut dependencies: Vec<Rc<RwLock<PackageNode>>> = value.read().unwrap().package.read().unwrap().dependencies.iter()
                 .filter_map(|d| tree.get(d.name.as_str())).cloned().collect();
             for dependency in dependencies.iter() {
                 dependency.write().unwrap().referenced += 1;
@@ -48,23 +48,28 @@ impl Data {
         root.clone()
     }
 
-    fn flatten<'α>(tree: Rc<RwLock<PackageNode<'α>>>, configuration: &Configuration) -> Vec<Rc<RwLock<PackageNode<'α>>>> {
-        let mut packages: BTreeMap<&'α str, Rc<RwLock<PackageNode<'α>>>> = BTreeMap::new();
+    fn flatten(tree: Rc<RwLock<PackageNode>>, configuration: &Configuration) -> Vec<Rc<RwLock<PackageNode>>> {
+        let mut packages: BTreeMap<String, Rc<RwLock<PackageNode>>> = BTreeMap::new();
         Self::flatten_to_vec(tree, configuration, 0, &mut packages);
         packages.values().cloned().collect()
     }
 
-    fn flatten_to_vec<'α>(tree: Rc<RwLock<PackageNode<'α>>>, configuration: &Configuration, current_depth: usize, packages: &mut BTreeMap<&'α str, Rc<RwLock<PackageNode<'α>>>>) {
+    fn flatten_to_vec(tree: Rc<RwLock<PackageNode>>, configuration: &Configuration, current_depth: usize, packages: &mut BTreeMap<String, Rc<RwLock<PackageNode>>>) {
         if let Some(maximum_depth) = configuration.maximum_depth {
             if current_depth >= maximum_depth {
                 return;
             }
         }
+        let package_name = tree.read().unwrap().package.read().unwrap().name.clone();
+        if packages.contains_key(&package_name) {
+            return;
+        }
         if current_depth > 0 || configuration.include_root {
-            packages.insert(tree.read().unwrap().package.name.as_str(), tree.clone());
-            for dependency in tree.read().unwrap().dependencies.read().unwrap().iter() {
-                Self::flatten_to_vec(dependency.clone(), configuration, current_depth + 1, packages);
-            }
+            packages.insert(package_name, tree.clone());
+        }
+
+        for dependency in tree.read().unwrap().dependencies.read().unwrap().iter() {
+            Self::flatten_to_vec(dependency.clone(), configuration, current_depth + 1, packages);
         }
     }
 }

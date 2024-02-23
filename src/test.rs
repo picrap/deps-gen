@@ -14,6 +14,6 @@ mod tests {
 {{/each}}
 there".into());
         let output = Generator::generate_output(&configuration);
-        assert!(output.contains("name=cargo-lock"));
+        assert!(output.contains("name=cargo_metadata"));
     }
 }
