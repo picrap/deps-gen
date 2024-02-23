@@ -25,7 +25,7 @@ fn main() {
 }
 ```
 
-The default configuration will take a `src/deps.template.rs` file and generate a `deps.rs` .
+The default configuration will take a `src/deps.template.rs` file and generate a `src/deps.rs` .
 
 ## Templating
 The library uses handlebars with the default [supported syntax](https://docs.rs/handlebars/5.1.0/handlebars/#built-in-helpers).
@@ -50,6 +50,7 @@ The supported field are
   - `homepage`
   - `documentation`
   - `edition`
+
 see [Rust manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html#the-documentation-field) for fields details
 
 ## An example
