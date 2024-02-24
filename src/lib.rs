@@ -5,30 +5,30 @@
 //! Allows to generate files from `Cargo.lock` and a provided template at build-time
 //! ## Example
 //! The following will build a file named `src/deps.rs`.
-//! 
+//!
 //! In `Cargo.toml`, add the following line:
 //! ```toml
 //! [build-dependencies]
 //! deps-gen = "*"
 //! ```
 //! then in your `build.rs`:
-//! ```rust
+//! ```rust-dummy
 //! mod deps;
-//! 
+//!
 //! fn main() {
 //!     deps::gen();
 //! }
 //! ```
 //! Add `src/deps.template.rs`:
-//! 
+//!
 //! ```rust
 //! #[allow(dead_code)]
-//! 
+//!
 //! pub struct License {
 //!     pub name: &'static str,
 //!     pub version: &'static str,
 //! }
-//! 
+//!
 //! impl License {
 //!     pub fn all() -> Vec<Self> {
 //!         vec![
