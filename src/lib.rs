@@ -12,9 +12,11 @@
 //! deps-gen = "*"
 //! ```
 //! then in your `build.rs`:
-//! ```rust
+//! ```rust-notest
+//! use deps_gen::gen_deps;
+//! 
 //! fn main() {
-//!     deps_gen::gen_deps();
+//!     gen_deps();
 //! }
 //! ```
 //! Add `src/deps.template.rs`:
