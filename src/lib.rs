@@ -1,5 +1,49 @@
 #![allow(non_ascii_idents)]
 
+//!
+//! # deps-gen
+//! Allows to generate files from `Cargo.lock` and a provided template at build-time
+//! ## Example
+//! The following will build a file named `src/deps.rs`.
+//! 
+//! In `Cargo.toml`, add the following line:
+//! ```toml
+//! [build-dependencies]
+//! deps-gen = "*"
+//! ```
+//! then in your `build.rs`:
+//! ```rust
+//! mod deps;
+//! 
+//! fn main() {
+//!     deps::gen();
+//! }
+//! ```
+//! Add `src/deps.template.rs`:
+//! 
+//! ```rust
+//! #[allow(dead_code)]
+//! 
+//! pub struct License {
+//!     pub name: &'static str,
+//!     pub version: &'static str,
+//! }
+//! 
+//! impl License {
+//!     pub fn all() -> Vec<Self> {
+//!         vec![
+//!             //{}{{#each dependencies}}
+//!             Self {
+//!                 name: "{{name}}",
+//!                 version: "{{version}}",
+//!             },
+//!             //{}{{/each}}
+//!         ]
+//!     }
+//! }
+//! ```
+//! See [readme](https://crates.io/crates/deps-gen) for more details
+
 mod test;
 mod generator;
 mod data;
