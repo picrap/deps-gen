@@ -3,7 +3,7 @@ use std::rc::Rc;
 use std::sync::RwLock;
 use cargo_metadata::{MetadataCommand, Package};
 use serde::Serialize;
-use crate::deps::Configuration;
+use crate::Configuration;
 
 #[derive(Serialize)]
 pub struct Data {

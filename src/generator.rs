@@ -4,7 +4,7 @@ use std::io::Error;
 use std::time::SystemTime;
 use handlebars::Handlebars;
 use crate::data::Data;
-use crate::deps::{Configuration, TemplateSource};
+use crate::{Configuration, TemplateSource};
 
 pub(crate) struct Generator;
 

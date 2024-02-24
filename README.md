@@ -14,10 +14,10 @@ deps-gen = "*"
 ```
 then in your `build.rs`:
 ```rust
-mod deps;
+use deps_gen;
 
 fn main() {
-    deps::gen();
+    gen_deps();
     // // or
     // let mut configuration = deps::Configuration::new()
     // // do some changes to configuration here

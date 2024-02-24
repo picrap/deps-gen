@@ -1,7 +1,7 @@
 
 #[cfg(test)]
 mod tests {
-use crate::deps::{Configuration, TemplateSource};
+use crate::{Configuration, TemplateSource};
 use crate::generator::Generator;
 
     #[test]
