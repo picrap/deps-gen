@@ -1,4 +1,4 @@
-name: Rust
+name: Build and publish
 
 on:
   push:
@@ -19,6 +19,7 @@ jobs:
       run: cargo test
     - name: Publish
       run: cargo publish --token ${CRATES_TOKEN}
+      continue-on-error: true
 
     env:
       CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
