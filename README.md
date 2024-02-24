@@ -21,7 +21,7 @@ fn main() {
     // // or
     // let mut configuration = deps::Configuration::new()
     // // do some changes to configuration here
-    // deps::gen_with_configuration(configuration);
+    // deps::gen_deps_with_conf(configuration);
 }
 ```
 
