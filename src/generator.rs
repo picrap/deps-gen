@@ -3,8 +3,8 @@ use std::fs;
 use std::io::Error;
 use std::time::SystemTime;
 use handlebars::Handlebars;
-use crate::configuration::{Configuration, TemplateSource};
 use crate::data::Data;
+use crate::deps::{Configuration, TemplateSource};
 
 pub(crate) struct Generator;
 

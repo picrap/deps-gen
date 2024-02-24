@@ -1,10 +1,8 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::configuration::{TemplateSource};
-    use crate::generator::Generator;
-
-    pub type Configuration = crate::configuration::Configuration;
+use crate::deps::{Configuration, TemplateSource};
+use crate::generator::Generator;
 
     #[test]
     fn gen_test() {

@@ -53,6 +53,8 @@ The supported field are
 
 see [Rust manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html#the-documentation-field) for fields details
 
+Also note that `//{}` is replaced with ` ` (an empty string) after template processing. This allows to cleanup.
+
 ## An example
 
 `deps.template.rs`:
@@ -60,16 +62,16 @@ see [Rust manifest reference](https://doc.rust-lang.org/cargo/reference/manifest
 ```rust
 #[allow(dead_code)]
 
-pub struct Licence {
+pub struct License {
     pub name: &'static str,
     pub version: &'static str,
 }
 
-impl Licence {
+impl License {
     pub fn all() -> Vec<Self> {
         vec![
             //{}{{#each dependencies}}
-            Licence {
+            Self {
                 name: "{{name}}",
                 version: "{{version}}",
             },
