@@ -131,7 +131,7 @@ pub fn gen_deps() -> Result<(), Error> {
 /// Detailed generator, allowing to customize configuration
 pub fn gen_deps_with_conf(configuration: Configuration) -> Result<(), Error> {
     if let TemplateSource::File(source_path) = &configuration.template {
-        println!("cargo:rerun-if-changed={}", fs::canonicalize(source_path).unwrap().to_str().unwrap());
+        println!("cargo:rerun-if-changed={}", fs::canonicalize(source_path)?.to_str().unwrap());
     }
     generator::Generator::gen_with_configuration(configuration)
 }

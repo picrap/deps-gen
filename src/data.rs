@@ -44,7 +44,7 @@ impl Data {
             }
             value.read().unwrap().dependencies.write().unwrap().append(&mut dependencies);
         }
-        let root = tree.values().filter(|k| k.read().unwrap().referenced == 0).last().unwrap();
+        let root = tree.values().filter(|k| k.read().unwrap().referenced == 0).nth(0).unwrap();
         root.clone()
     }
 
@@ -60,12 +60,13 @@ impl Data {
                 return;
             }
         }
-        let package_name = tree.read().unwrap().package.read().unwrap().name.clone();
-        if packages.contains_key(&package_name) {
+        let package_name = tree.read().unwrap();
+        let package_name = &package_name.package.read().unwrap().name;
+        if packages.contains_key(package_name.as_str()) {
             return;
         }
         if current_depth > 0 || configuration.include_root {
-            packages.insert(package_name, tree.clone());
+            packages.insert(package_name.as_str().into(), tree.clone());
         }
 
         for dependency in tree.read().unwrap().dependencies.read().unwrap().iter() {

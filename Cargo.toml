@@ -1,6 +1,6 @@
 [package]
 name = "deps-gen"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 license = "MIT"
 description = "Generate a file from template and Cargo.lock"
@@ -8,6 +8,6 @@ repository = "https://github.com/picrap/deps-gen.git"
 homepage = "https://github.com/picrap/deps-gen"
 
 [dependencies]
-handlebars = { version = "5.1.0" }
-serde = { version = "1.0.197", features = ["derive"] }
-cargo_metadata = { version = "0.18.1" }
+handlebars = { version = "6.3.2" }
+serde = { version = "1.0.219", features = ["derive"] }
+cargo_metadata = { version = "0.20.0" }
